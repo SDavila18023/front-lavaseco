@@ -4,20 +4,20 @@ import {
   deleteEmployee,
   createEmployee,
 } from "../../../services/EmployeeService";
-import { 
-  Plus, 
-  Trash2, 
-  Search, 
-  UserPlus, 
-  DollarSign, 
-  AlertCircle, 
-  Loader2, 
-  Filter, 
-  ChevronDown, 
+import {
+  Plus,
+  Trash2,
+  Search,
+  UserPlus,
+  DollarSign,
+  AlertCircle,
+  Loader2,
+  Filter,
+  ChevronDown,
   FileSpreadsheet,
   Mail,
   Phone,
-  User 
+  User
 } from "lucide-react";
 import EmployeeModal from "./CreateEmployeeModal";
 import PayrollModal from "./PayrollModal";
@@ -105,15 +105,15 @@ const EmployeeTable = () => {
     .sort((a, b) => {
       const aValue = a[sortBy]?.toString().toLowerCase();
       const bValue = b[sortBy]?.toString().toLowerCase();
-      
+
       if (!aValue || !bValue) return 0;
-      
+
       if (sortBy === 'salario') {
-        return sortDirection === 'asc' 
+        return sortDirection === 'asc'
           ? parseFloat(a[sortBy]) - parseFloat(b[sortBy])
           : parseFloat(b[sortBy]) - parseFloat(a[sortBy]);
       }
-      
+
       return sortDirection === 'asc'
         ? aValue.localeCompare(bValue)
         : bValue.localeCompare(aValue);
@@ -127,7 +127,7 @@ const EmployeeTable = () => {
       </div>
     );
 
-  if (error) 
+  if (error)
     return (
       <div className="flex items-center justify-center h-64 bg-red-50 rounded-lg p-4">
         <AlertCircle className="w-6 h-6 text-red-500" />
@@ -165,11 +165,11 @@ const EmployeeTable = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        
+
         <div className="flex items-center text-sm text-purple-700 font-medium">
           <Filter size={16} className="mr-1" />
           <span className="mr-2">Ordenar por:</span>
-          <select 
+          <select
             className="bg-white border border-purple-200 rounded-md px-3 py-1.5 shadow-sm outline-none"
             value={sortBy}
             onChange={(e) => handleSort(e.target.value)}
@@ -179,15 +179,14 @@ const EmployeeTable = () => {
             <option value="salario">Salario</option>
             <option value="frecuencia_pago">Fecha de Pago</option>
           </select>
-          <button 
+          <button
             onClick={() => setSortDirection(sortDirection === "asc" ? "desc" : "asc")}
             className="ml-2 p-1.5 bg-purple-100 rounded-md hover:bg-purple-200"
           >
-            <ChevronDown 
-              size={16} 
-              className={`text-purple-700 transition-transform duration-200 ${
-                sortDirection === "desc" ? "rotate-180" : ""
-              }`} 
+            <ChevronDown
+              size={16}
+              className={`text-purple-700 transition-transform duration-200 ${sortDirection === "desc" ? "rotate-180" : ""
+                }`}
             />
           </button>
         </div>
@@ -226,9 +225,8 @@ const EmployeeTable = () => {
               {filteredEmployees.map((employee, index) => (
                 <tr
                   key={employee.id_empleado}
-                  className={`border-b border-purple-100 hover:bg-purple-50 transition-colors ${
-                    index % 2 === 0 ? "bg-purple-50/50" : "bg-white"
-                  }`}
+                  className={`border-b border-purple-100 hover:bg-purple-50 transition-colors ${index % 2 === 0 ? "bg-purple-50/50" : "bg-white"
+                    }`}
                 >
                   <td className="py-3 px-4 font-medium text-purple-900">{employee.nom_empleado}</td>
                   <td className="py-3 px-4">
@@ -263,7 +261,7 @@ const EmployeeTable = () => {
             </tbody>
           </table>
         </div>
-        
+
         {filteredEmployees.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 px-4 text-center bg-purple-50/50">
             <AlertCircle size={40} className="text-purple-400 mb-3" />
@@ -286,18 +284,18 @@ const EmployeeTable = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-4 rounded-lg shadow-md border border-purple-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-emerald-600 text-sm font-medium">Salario Promedio</p>
               <p className="text-2xl font-bold text-emerald-700">
-                ${employees.length > 0 
+                ${employees.length > 0
                   ? new Intl.NumberFormat().format(
-                      Math.round(
-                        employees.reduce((sum, emp) => sum + parseFloat(emp.salario), 0) / employees.length
-                      )
+                    Math.round(
+                      employees.reduce((sum, emp) => sum + parseFloat(emp.salario), 0) / employees.length
                     )
+                  )
                   : 0}
               </p>
             </div>
@@ -306,7 +304,7 @@ const EmployeeTable = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-4 rounded-lg shadow-md border border-purple-100">
           <div className="flex items-center justify-between">
             <div>

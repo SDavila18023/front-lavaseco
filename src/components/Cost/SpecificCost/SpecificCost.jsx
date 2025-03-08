@@ -28,7 +28,7 @@ const SpecificCost = () => {
       const data = await fetchExpenses();
       setExpenses(data);
     } catch (err) {
-      setError("Error");
+      setError("Error al cargar los gastos");
     } finally {
       setLoading(false);
     }
@@ -37,7 +37,7 @@ const SpecificCost = () => {
   const handleDelete = async (id) => {
     try {
       await deleteExpense(id);
-      setExpenses(expenses.filter((expense) => expense.id !== id));
+      await loadExpenses();
     } catch (err) {
       setError("Error al borrar");
     }
@@ -50,16 +50,13 @@ const SpecificCost = () => {
       } else {
         await createExpense(formData);
       }
-      console.log("Datos guardados correctamente");
 
       await loadExpenses();
-      console.log("Gastos recargados correctamente");
 
       setIsModalOpen(false);
       setCurrentExpense(null);
     } catch (err) {
-      console.error("Error en handleSave:", err);
-      setError("Error");
+      setError("Error al guardar");
     }
   };
 

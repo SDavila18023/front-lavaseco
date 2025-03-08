@@ -20,7 +20,6 @@ const Main = () => {
     endDate: new Date()
   });
 
-  // Colores para los gráficos
   const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c', '#d0ed57', '#83a6ed', '#6b46c1'];
 
   useEffect(() => {
@@ -33,10 +32,8 @@ const Main = () => {
       const response = await axios.get("http://localhost:5000/api/dashboard-data");
       const { ingresos, gastos } = response.data;
 
-      // Filtrar ingresos válidos (sin "Desconocido")
       const validIncome = ingresos.filter(item => item.fecha !== "Desconocido");
-      
-      // Almacenar datos sin procesar
+
       setFinancialData({
         rawIncome: validIncome,
         rawExpenses: gastos,
@@ -44,9 +41,8 @@ const Main = () => {
         expensesByCategory: []
       });
 
-      // Aplicar filtro inicial para mostrar datos por defecto
       processData("all", dateRange.startDate, dateRange.endDate, validIncome, gastos);
-      
+
     } catch (error) {
       console.error("Error al obtener los datos:", error);
     } finally {
@@ -54,14 +50,12 @@ const Main = () => {
     }
   };
 
-  // Aplicar filtro por tiempo
   const applyTimeFilter = (filter) => {
     setTimeFilter(filter);
-    
+
     let startDate = dateRange.startDate;
     let endDate = dateRange.endDate;
 
-    // Establecer rango de fechas basado en el filtro
     const now = new Date();
     switch (filter) {
       case "week":
@@ -77,7 +71,6 @@ const Main = () => {
         endDate = new Date();
         break;
       default:
-        // "all" - no filtering
         break;
     }
 
@@ -85,12 +78,10 @@ const Main = () => {
     processData(filter, startDate, endDate, financialData.rawIncome, financialData.rawExpenses);
   };
 
-  // Procesar datos según el filtro
   const processData = (filter, startDate, endDate, rawIncome, rawExpenses) => {
     let filteredIncome = [...rawIncome];
     let filteredExpenses = [...rawExpenses];
 
-    // Aplicar filtro por fecha si no es "all"
     if (filter !== "all") {
       filteredIncome = filteredIncome.filter(item => {
         const itemDate = new Date(item.fecha);
@@ -103,7 +94,6 @@ const Main = () => {
       });
     }
 
-    // Procesar ingresos
     const processedIncome = filteredIncome
       .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
       .map(item => ({
@@ -112,14 +102,12 @@ const Main = () => {
         codigo: item.codigo
       }));
 
-    // Procesar gastos
     const processedExpenses = filteredExpenses.map(item => ({
       name: item.concepto,
       costos: item.costos,
       fecha: formatDate(item.fecha)
     }));
 
-    // Actualizar estado
     setFinancialData(prev => ({
       ...prev,
       incomeByDate: processedIncome,
@@ -127,7 +115,6 @@ const Main = () => {
     }));
   };
 
-  // Función para formatear fechas
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
@@ -138,7 +125,6 @@ const Main = () => {
     navigate("/");
   };
 
-  // Opciones del dashboard
   const dashboardOptions = [
     {
       title: "Facturación",
@@ -160,7 +146,6 @@ const Main = () => {
     }
   ];
 
-  // Calcular totales para tarjetas de resumen
   const totalIncome = financialData.incomeByDate.reduce((sum, item) => sum + item.ingresos, 0);
   const totalExpenses = financialData.expensesByCategory.reduce((sum, item) => sum + item.costos, 0);
   const balance = totalIncome - totalExpenses;
@@ -208,7 +193,7 @@ const Main = () => {
               <p className="text-2xl font-bold">${totalIncome.toLocaleString()}</p>
             )}
           </div>
-          
+
           <div className="bg-gradient-to-r  from-purple-700 to-purple-800 rounded-lg shadow-md p-6 text-white">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-medium">Gastos Totales</h3>
@@ -220,7 +205,7 @@ const Main = () => {
               <p className="text-2xl font-bold">${totalExpenses.toLocaleString()}</p>
             )}
           </div>
-          
+
           <div className={`bg-gradient-to-r ${balance >= 0 ? 'from-green-500 to-green-600' : ' from-purple-500 to-purple-600'} rounded-lg shadow-md p-6 text-white`}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-medium">Balance</h3>
@@ -240,27 +225,27 @@ const Main = () => {
             <Filter className="text-purple-700 w-5 h-5 mr-2" />
             <h3 className="text-lg font-medium text-purple-800">Filtros</h3>
           </div>
-          
+
           <div className="flex flex-wrap gap-2">
-            <button 
+            <button
               onClick={() => applyTimeFilter("all")}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${timeFilter === "all" ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-800 hover:bg-purple-200'}`}
             >
               Todo
             </button>
-            <button 
+            <button
               onClick={() => applyTimeFilter("week")}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${timeFilter === "week" ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-800 hover:bg-purple-200'}`}
             >
               Última semana
             </button>
-            <button 
+            <button
               onClick={() => applyTimeFilter("month")}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${timeFilter === "month" ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-800 hover:bg-purple-200'}`}
             >
               Último mes
             </button>
-            <button 
+            <button
               onClick={() => applyTimeFilter("year")}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${timeFilter === "year" ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-800 hover:bg-purple-200'}`}
             >
@@ -277,7 +262,7 @@ const Main = () => {
               <DollarSign className="text-purple-700 w-5 h-5 mr-2" />
               <h3 className="text-lg font-medium text-purple-800">Ingresos por Fecha</h3>
             </div>
-            
+
             {isLoading ? (
               <div className="animate-pulse bg-purple-100 h-64 w-full rounded"></div>
             ) : financialData.incomeByDate.length > 0 ? (
@@ -287,11 +272,11 @@ const Main = () => {
                   <YAxis />
                   <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
                   <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="ingresos" 
-                    name="Ingresos" 
-                    stroke="#6B46C1" 
+                  <Line
+                    type="monotone"
+                    dataKey="ingresos"
+                    name="Ingresos"
+                    stroke="#6B46C1"
                     strokeWidth={2}
                     dot={{ fill: '#6B46C1', r: 4 }}
                     activeDot={{ r: 6 }}
@@ -312,7 +297,7 @@ const Main = () => {
               <TrendingDown className="text-red-500 w-5 h-5 mr-2" />
               <h3 className="text-lg font-medium text-purple-800">Distribución de Gastos</h3>
             </div>
-            
+
             {isLoading ? (
               <div className="animate-pulse bg-purple-100 h-64 w-full rounded"></div>
             ) : financialData.expensesByCategory.length > 0 ? (

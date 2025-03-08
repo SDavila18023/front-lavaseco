@@ -22,7 +22,7 @@ const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
-      
+
 
       {supplies.length > 0 ? (
         <div className="overflow-x-auto">
@@ -78,12 +78,14 @@ const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }) => {
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end gap-2">
                       <button
-                        onClick={() => onEdit(supply.id_insumo)}
+                        onClick={() => onEdit(supply)}
                         className="text-indigo-600 hover:text-indigo-900 bg-indigo-100 p-2 rounded-full transition-colors hover:bg-indigo-200"
                         title="Editar"
                       >
                         <PencilLine size={16} />
                       </button>
+
+
                       <button
                         onClick={() => onDelete(supply.id_insumo)}
                         className="text-red-600 hover:text-red-900 bg-red-100 p-2 rounded-full transition-colors hover:bg-red-200"

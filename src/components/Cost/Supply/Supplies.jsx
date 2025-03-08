@@ -63,9 +63,11 @@ const Supplies = () => {
   };
 
   const handleEdit = (supply) => {
+    console.log("Editando insumo:", supply);
     setCurrentSupply(supply);
     setIsModalOpen(true);
   };
+
 
   const filteredSupplies = supplies.filter((supply) =>
     supply.nom_insumo.toLowerCase().includes(searchTerm.toLowerCase())

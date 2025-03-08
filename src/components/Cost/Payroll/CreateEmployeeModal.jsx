@@ -16,37 +16,37 @@ const CreateEmployeeModal = ({ isOpen, onClose, onCreate }) => {
 
     if (isOpen) {
       window.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden"; // Prevent scrolling when modal is open
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "auto"; // Re-enable scrolling when modal closes
+      document.body.style.overflow = "auto";
     };
   }, [isOpen, onClose]);
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!name.trim()) {
       newErrors.name = "El nombre es obligatorio";
     }
-    
+
     if (!tipo_emp.trim()) {
       newErrors.tipo_emp = "El cargo es obligatorio";
     }
-    
+
     const parsedSalary = parseFloat(salary);
     if (isNaN(parsedSalary) || parsedSalary <= 0) {
       newErrors.salary = "El salario debe ser un número mayor a 0";
     }
-    
+
     if (!phone.trim()) {
       newErrors.phone = "El teléfono es obligatorio";
     } else if (!/^\d{7,15}$/.test(phone.replace(/\D/g, ''))) {
       newErrors.phone = "Ingrese un número de teléfono válido";
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -66,7 +66,6 @@ const CreateEmployeeModal = ({ isOpen, onClose, onCreate }) => {
       frecuencia_pago: paymentFrequency,
     });
 
-    // Reset form
     setName("");
     setSalary("");
     setTipo_emp("");
@@ -80,7 +79,7 @@ const CreateEmployeeModal = ({ isOpen, onClose, onCreate }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm transition-opacity">
-      <div 
+      <div
         className="bg-white rounded-xl shadow-2xl w-full max-w-md transform transition-all duration-300 ease-in-out"
         onClick={(e) => e.stopPropagation()}
       >

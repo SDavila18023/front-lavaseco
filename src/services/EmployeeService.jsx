@@ -10,7 +10,7 @@ export const fetchEmployees = async () => {
 
 export const createEmployee = async (employeeData) => {
   console.log(employeeData);
-  
+
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {
@@ -64,7 +64,6 @@ export const getEmployeeExpenses = async (id) => {
   return response.json();
 };
 
-// Search employees
 export const searchEmployees = async (searchTerm) => {
   const response = await fetch(
     `${API_URL}/search?term=${encodeURIComponent(searchTerm)}`
@@ -75,7 +74,6 @@ export const searchEmployees = async (searchTerm) => {
   return response.json();
 };
 
-// Get employee statistics
 export const getEmployeeStats = async () => {
   const response = await fetch(`${API_URL}/stats`);
   if (!response.ok) {
@@ -84,7 +82,6 @@ export const getEmployeeStats = async () => {
   return response.json();
 };
 
-// Filter employees by type
 export const filterEmployeesByType = async (type) => {
   const response = await fetch(
     `${API_URL}/filter?type=${encodeURIComponent(type)}`
@@ -95,7 +92,6 @@ export const filterEmployeesByType = async (type) => {
   return response.json();
 };
 
-// Get employee total expenses
 export const getEmployeeTotalExpenses = async (id) => {
   const response = await fetch(`${API_URL}/${id}/total-expenses`);
   if (!response.ok) {

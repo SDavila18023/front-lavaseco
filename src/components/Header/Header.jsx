@@ -30,9 +30,9 @@ const Header = ({ onLogout }) => {
               <LogOut className="w-4 h-4" />
               Cerrar Sesión
             </button>
-            
+
             {/* Admin Dropdown */}
-           
+
           </div>
 
           {/* Mobile Menu Button */}
@@ -67,8 +67,8 @@ const Header = ({ onLogout }) => {
                   Cerrar Sesión
                 </button>
               </div>
-              
-             {/*  <div className="space-y-2">
+
+              {/*  <div className="space-y-2">
                 <p className="text-purple-700 font-medium px-3 py-1">
                   Administrador
                 </p>

@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { updateEmployee } from "../../../services/EmployeeService";
-import { 
-  X, 
-  Save, 
-  DollarSign, 
-  CreditCard, 
-  AlertCircle, 
-  FileText, 
+import {
+  X,
+  Save,
+  DollarSign,
+  CreditCard,
+  AlertCircle,
+  FileText,
   Award,
   CheckCircle
 } from "lucide-react";
 
 const PayrollModal = ({ isOpen, onClose, employee }) => {
   const [amount, setAmount] = useState("");
-  const [type, setType] = useState("liquidacion"); // Por defecto, "liquidación"
+  const [type, setType] = useState("liquidacion");
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
@@ -22,14 +22,13 @@ const PayrollModal = ({ isOpen, onClose, employee }) => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
     }
-    
+
     return () => {
       document.body.style.overflow = "auto";
     };
   }, [isOpen]);
 
   useEffect(() => {
-    // Reset states when modal opens
     if (isOpen) {
       setAmount("");
       setType("liquidacion");
@@ -41,25 +40,24 @@ const PayrollModal = ({ isOpen, onClose, employee }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!amount || parseFloat(amount) <= 0) {
       setError("Por favor ingrese un monto válido mayor a cero");
       return;
     }
-    
+
     setSaving(true);
     setError(null);
-    
+
     try {
       await updateEmployee(employee.id_empleado, {
         tipo_pago: type,
         monto: parseFloat(amount),
       });
-      
+
       setSuccess(true);
       setSaving(false);
-      
-      // Auto close after success message
+
       setTimeout(() => {
         onClose();
       }, 1500);
@@ -122,11 +120,10 @@ const PayrollModal = ({ isOpen, onClose, employee }) => {
                 <div className="flex space-x-2">
                   <button
                     type="button"
-                    className={`flex-1 py-3 px-4 rounded-lg flex items-center justify-center ${
-                      type === "liquidacion"
+                    className={`flex-1 py-3 px-4 rounded-lg flex items-center justify-center ${type === "liquidacion"
                         ? "bg-purple-100 text-purple-800 border-2 border-purple-400"
                         : "bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200"
-                    }`}
+                      }`}
                     onClick={() => setType("liquidacion")}
                   >
                     <FileText className="h-4 w-4 mr-2" />
@@ -134,11 +131,10 @@ const PayrollModal = ({ isOpen, onClose, employee }) => {
                   </button>
                   <button
                     type="button"
-                    className={`flex-1 py-3 px-4 rounded-lg flex items-center justify-center ${
-                      type === "prima"
+                    className={`flex-1 py-3 px-4 rounded-lg flex items-center justify-center ${type === "prima"
                         ? "bg-purple-100 text-purple-800 border-2 border-purple-400"
                         : "bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200"
-                    }`}
+                      }`}
                     onClick={() => setType("prima")}
                   >
                     <Award className="h-4 w-4 mr-2" />
@@ -181,7 +177,7 @@ const PayrollModal = ({ isOpen, onClose, employee }) => {
                     <div className="text-sm text-blue-800">
                       <p className="font-medium mb-1">Información importante</p>
                       <p className="text-blue-700">
-                        {type === "liquidacion" 
+                        {type === "liquidacion"
                           ? "La liquidación se calculará según las leyes laborales vigentes y el tiempo de servicio del empleado."
                           : "La prima corresponde al beneficio semestral establecido por ley para el trabajador."}
                       </p>
@@ -206,9 +202,8 @@ const PayrollModal = ({ isOpen, onClose, employee }) => {
               </button>
               <button
                 type="submit"
-                className={`px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all flex items-center ${
-                  saving ? "opacity-70 cursor-not-allowed" : ""
-                }`}
+                className={`px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all flex items-center ${saving ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
                 disabled={saving}
               >
                 {saving ? (

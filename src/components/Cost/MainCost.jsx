@@ -30,18 +30,16 @@ const MainCost = () => {
       setLoading(true);
       setError(null);
       const response = await axios.get("http://localhost:5000/api/cost/");
-  
+
       const expensesData = response.data;
       if (!expensesData || expensesData.length === 0) {
         throw new Error("No expenses found");
       }
-  
-      // Obtener mes y año actual
+
       const today = new Date();
-      const currentMonth = today.getMonth() + 1; // Enero es 0
+      const currentMonth = today.getMonth() + 1;
       const currentYear = today.getFullYear();
-  
-      // Filtrar solo los gastos del mes actual
+
       const monthlyExpenses = expensesData
         .map((expense) => {
           const [year, month, day] = expense.fecha_compra.split("-").map(Number);
@@ -49,7 +47,7 @@ const MainCost = () => {
             id: expense.id_gastos,
             concept: expense.concepto_gasto,
             amount: expense.total_gastos,
-            date: new Date(year, month - 1, day), // Crear fecha correctamente
+            date: new Date(year, month - 1, day),
           };
         })
         .filter((expense) => {
@@ -58,14 +56,14 @@ const MainCost = () => {
             expense.date.getMonth() + 1 === currentMonth
           );
         });
-  
+
       setExpenses(
         monthlyExpenses.map((expense) => ({
           ...expense,
           date: expense.date.toLocaleDateString("es-ES"),
         }))
       );
-  
+
       setTotalExpenses(
         monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0)
       );
@@ -76,7 +74,7 @@ const MainCost = () => {
       setLoading(false);
     }
   };
-  
+
   const getCurrentMonthName = () => {
     const months = [
       "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -101,8 +99,8 @@ const MainCost = () => {
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="bg-purple-50 text-purple-900 p-6 md:p-8 rounded-xl w-full max-w-5xl mx-auto shadow-lg">
         {/* Botón para volver */}
-        <button 
-          onClick={() => navigate(-1)} 
+        <button
+          onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-purple-600 hover:text-purple-800 transition-colors mb-6 bg-white py-2 px-4 rounded-lg shadow-sm"
         >
           <ArrowLeft size={20} />

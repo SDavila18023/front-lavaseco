@@ -19,7 +19,7 @@ const BillingTable = () => {
       const response = await axios.get("http://localhost:5000/api/bill/");
       setFacturas(response.data);
       console.log(response.data);
-      
+
       setLoading(false);
     } catch (err) {
       setError("Error al cargar las facturas.");
@@ -49,11 +49,18 @@ const BillingTable = () => {
     }
   };
 
-  const filteredFacturas = facturas.filter((factura) =>
-    Object.values(factura).some((value) =>
-      String(value).toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+  const filteredFacturas = facturas.filter((factura) => {
+    return (
+      Object.values(factura).some((value) =>
+        String(value || "").toLowerCase().includes(searchTerm.trim().toLowerCase())
+      ) ||
+      (factura.cliente &&
+        (factura.cliente.nombre_cliente?.toLowerCase().includes(searchTerm.trim().toLowerCase()) ||
+          factura.cliente.tel_cliente?.toLowerCase().includes(searchTerm.trim().toLowerCase())))
+    );
+  });
+
+
 
   if (loading)
     return (
@@ -135,19 +142,18 @@ const BillingTable = () => {
                 <td className="p-3">{factura.cliente?.tel_cliente || "N/A"}</td>
                 <td className="p-3">
                   <span
-                    className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                      factura.estado?.toLowerCase() === "pendiente"
-                        ? "bg-yellow-500 text-white"
-                        : factura.estado?.toLowerCase() === "entregado"
+                    className={`px-3 py-1 rounded-full text-sm font-semibold ${factura.estado?.toLowerCase() === "pendiente"
+                      ? "bg-yellow-500 text-white"
+                      : factura.estado?.toLowerCase() === "entregado"
                         ? "bg-green-500 text-white"
                         : "bg-gray-400 text-white"
-                    }`}
+                      }`}
                   >
                     {factura.estado?.toLowerCase() === "pendiente"
                       ? "Pendiente"
                       : factura.estado?.toLowerCase() === "entregado"
-                      ? "Entregado"
-                      : "Desconocido"}
+                        ? "Entregado"
+                        : "Desconocido"}
                   </span>
                 </td>
 

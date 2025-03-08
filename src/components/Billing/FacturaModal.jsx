@@ -24,7 +24,7 @@ const sucursales = [
 const FacturaModal = ({ isOpen, onClose, onSubmit }) => {
   const [factura, setFactura] = useState({
     cod_factura: "",
-    fecha_creacion: new Date().toISOString().split("T")[0], // Fecha actual
+    fecha_creacion: new Date().toISOString().split("T")[0],
     valor_total: 0,
     nombre_cliente: "",
     telefono_cliente: "",
@@ -95,9 +95,9 @@ const FacturaModal = ({ isOpen, onClose, onSubmit }) => {
       },
       sucursal: sucursalSeleccionada
         ? {
-            nom_sucursal: sucursalSeleccionada.nombre,
-            direccion_suc: sucursalSeleccionada.direccion,
-          }
+          nom_sucursal: sucursalSeleccionada.nombre,
+          direccion_suc: sucursalSeleccionada.direccion,
+        }
         : {},
       factura_detalle: factura.detalles,
     };

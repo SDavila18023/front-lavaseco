@@ -9,11 +9,19 @@ const SupplyModal = ({ isOpen, supply, onClose, onSave }) => {
   });
 
   useEffect(() => {
+    console.log("Supply recibido en modal:", supply);
+
     if (supply) {
       setFormData({
-        nom_insumo: supply.nom_insumo,
-        valor_insumo: supply.valor_insumo,
-        detalle_insumo: supply.detalle_insumo || [],
+        nom_insumo: supply.nom_insumo || "",
+        valor_insumo: supply.valor_insumo || "",
+        detalle_insumo: Array.isArray(supply.insumo_detalle)
+          ? supply.insumo_detalle.map((item) => ({
+            id_detalle_insumo: item.id_detalle_insumo,
+            concepto: item.detalle?.concepto || "",
+            peso: item.detalle?.peso || "",
+          }))
+          : [],
       });
     } else {
       setFormData({
@@ -23,6 +31,7 @@ const SupplyModal = ({ isOpen, supply, onClose, onSave }) => {
       });
     }
   }, [supply]);
+
 
   const handleAddDetail = () => {
     setFormData({
@@ -64,10 +73,7 @@ const SupplyModal = ({ isOpen, supply, onClose, onSave }) => {
           <h3 className="text-xl font-semibold text-gray-900">
             {supply ? "Editar" : "Agregar nuevo insumo"}
           </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             ×
           </button>
         </div>
@@ -80,9 +86,7 @@ const SupplyModal = ({ isOpen, supply, onClose, onSave }) => {
               type="text"
               required
               value={formData.nom_insumo}
-              onChange={(e) =>
-                setFormData({ ...formData, nom_insumo: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, nom_insumo: e.target.value })}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
@@ -95,9 +99,7 @@ const SupplyModal = ({ isOpen, supply, onClose, onSave }) => {
               min="0"
               required
               value={formData.valor_insumo}
-              onChange={(e) =>
-                setFormData({ ...formData, valor_insumo: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, valor_insumo: e.target.value })}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
@@ -112,8 +114,7 @@ const SupplyModal = ({ isOpen, supply, onClose, onSave }) => {
                 onClick={handleAddDetail}
                 className="text-purple-600 hover:text-purple-700 text-sm flex items-center gap-1"
               >
-                <Plus size={16} />
-                Agregar detalle
+                <Plus size={16} /> Agregar detalle
               </button>
             </div>
 
@@ -123,9 +124,7 @@ const SupplyModal = ({ isOpen, supply, onClose, onSave }) => {
                   type="text"
                   placeholder="Concepto"
                   value={detail.concepto}
-                  onChange={(e) =>
-                    handleDetailChange(index, "concepto", e.target.value)
-                  }
+                  onChange={(e) => handleDetailChange(index, "concepto", e.target.value)}
                   className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
                 <input
@@ -133,9 +132,7 @@ const SupplyModal = ({ isOpen, supply, onClose, onSave }) => {
                   step="0.01"
                   placeholder="Peso (kg)"
                   value={detail.peso}
-                  onChange={(e) =>
-                    handleDetailChange(index, "peso", e.target.value)
-                  }
+                  onChange={(e) => handleDetailChange(index, "peso", e.target.value)}
                   className="w-24 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
                 <button
