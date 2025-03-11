@@ -10,6 +10,8 @@ import SpecificCostPage from "./pages/SpecificCostPage";
 import SupplyPage from "./pages/SupplyPage";
 import PayrollPage from "./pages/PayrollPage";
 import ReportPage from "./pages/ReportPage";
+import AdminProtectedRoute from "./utils/AdminProtectedRoute";
+import AdminPage from "./pages/AdminPage";
 
 const routes = [
   { path: "/", element: <LoginPage /> },
@@ -76,6 +78,14 @@ const routes = [
         <PayrollPage />
       </ProtectedRoute>
     ),
+  },
+  {
+    path: "/admin/users",
+    element: (
+      <AdminProtectedRoute>
+        <AdminPage />
+      </AdminProtectedRoute>
+    )
   },
   { path: "*", element: <NotFoundPage /> },
 ];

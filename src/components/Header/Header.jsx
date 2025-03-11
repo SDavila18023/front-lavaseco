@@ -1,10 +1,23 @@
-import React, { useState } from "react";
-import { LogOut, Menu, User, Settings, HelpCircle, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { LogOut, Menu, User, Settings, HelpCircle, X, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Header = ({ onLogout }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  
+  // Verificar si el usuario es administrador usando sessionStorage
+  useEffect(() => {
+    const userEmail = JSON.parse(sessionStorage.getItem('userData')).email;
+    console.log(userEmail);
+    
+    if (userEmail === "admin@admin") {
+      setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
+    }
+  }, []);
 
   return (
     <header className="bg-white shadow-purple-100 shadow-lg">
@@ -23,6 +36,17 @@ const Header = ({ onLogout }) => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-4">
+            {/* Botón de Administración de Usuarios (solo visible para admin) */}
+            {isAdmin && (
+              <Link
+                to="/admin/users"
+                className="px-4 py-2 text-sm font-medium text-purple-600 hover:text-purple-800 flex items-center gap-2 transition-colors duration-300"
+              >
+                <Users className="w-4 h-4" />
+                Administración de Usuarios
+              </Link>
+            )}
+            
             <button
               onClick={onLogout}
               className="px-4 py-2 text-sm font-medium text-purple-600 hover:text-purple-800 flex items-center gap-2 transition-colors duration-300"
@@ -30,9 +54,6 @@ const Header = ({ onLogout }) => {
               <LogOut className="w-4 h-4" />
               Cerrar Sesión
             </button>
-
-            {/* Admin Dropdown */}
-
           </div>
 
           {/* Mobile Menu Button */}
@@ -58,6 +79,19 @@ const Header = ({ onLogout }) => {
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 bg-purple-50">
             <div className="rounded-md py-2 px-3">
+              {/* Botón de Administración de Usuarios en móvil (solo visible para admin) */}
+              {isAdmin && (
+                <div className="text-center mb-4">
+                  <Link
+                    to="/admin/users"
+                    className="w-full px-4 py-2 font-medium text-purple-600 bg-white rounded-md shadow-sm hover:bg-purple-100 flex items-center justify-center gap-2 transition-colors duration-300"
+                  >
+                    <Users className="w-4 h-4" />
+                    Administración de Usuarios
+                  </Link>
+                </div>
+              )}
+              
               <div className="text-center mb-4">
                 <button
                   onClick={onLogout}
@@ -67,33 +101,6 @@ const Header = ({ onLogout }) => {
                   Cerrar Sesión
                 </button>
               </div>
-
-              {/*  <div className="space-y-2">
-                <p className="text-purple-700 font-medium px-3 py-1">
-                  Administrador
-                </p>
-                <a
-                  href="/profile"
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-purple-600 bg-white rounded-md hover:bg-purple-100 transition-colors duration-200"
-                >
-                  <User className="w-4 h-4" />
-                  Mi Perfil
-                </a>
-                <a
-                  href="/settings"
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-purple-600 bg-white rounded-md hover:bg-purple-100 transition-colors duration-200"
-                >
-                  <Settings className="w-4 h-4" />
-                  Configuración
-                </a>
-                <a
-                  href="/help"
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-purple-600 bg-white rounded-md hover:bg-purple-100 transition-colors duration-200"
-                >
-                  <HelpCircle className="w-4 h-4" />
-                  Ayuda
-                </a>
-              </div> */}
             </div>
           </div>
         </div>
