@@ -17,7 +17,7 @@ import {
 
 const sucursales = [
   { nombre: "Sucursal Cedritos", direccion: "Carrera 11#146-08" },
-  { nombre: "Sucursal Almacen", direccion: "Calle 45 #12-34" },
+  { nombre: "Sucursal Almacen", direccion: "Calle 161#16C-27" },
   { nombre: "Sucursal Domicilio", direccion: "Domicilio" },
 ];
 
