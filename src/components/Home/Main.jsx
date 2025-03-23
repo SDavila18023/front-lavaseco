@@ -127,7 +127,7 @@ const Main = () => {
 
   const dashboardOptions = [
     {
-      title: "Facturación",
+      title: "Facturación e Inventario",
       description: "Gestiona facturas y pagos",
       icon: <DollarSign className="w-6 h-6" />,
       path: "/billing"

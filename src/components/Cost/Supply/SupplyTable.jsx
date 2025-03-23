@@ -1,5 +1,15 @@
 import React from "react";
-import { Trash2, PencilLine, Loader2, AlertCircle, Package, DollarSign, Info, Plus, Search } from "lucide-react";
+import {
+  Trash2,
+  PencilLine,
+  Loader2,
+  AlertCircle,
+  Package,
+  DollarSign,
+  Info,
+  Plus,
+  Search,
+} from "lucide-react";
 
 const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }) => {
   if (loading) {
@@ -22,8 +32,6 @@ const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
-
-
       {supplies.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -51,28 +59,44 @@ const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }) => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {supplies.map((supply) => (
-                <tr key={supply.id_insumo} className="hover:bg-purple-50 transition-colors">
+                <tr
+                  key={supply.id_insumo}
+                  className="hover:bg-purple-50 transition-colors"
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-medium text-gray-900">{supply.nom_insumo}</div>
+                    <div className="font-medium text-gray-900">
+                      {supply.nom_insumo}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full inline-flex items-center">
                       <DollarSign size={14} className="mr-1" />
-                      {supply.valor_insumo?.toFixed(2)}
+                      {new Intl.NumberFormat("es-ES").format(
+                        supply.valor_insumo
+                      )}
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     {supply.detalle_insumo?.length > 0 ? (
                       <div className="space-y-1">
                         {supply.detalle_insumo?.map((detail) => (
-                          <div key={detail.id_detalle_insumo} className="text-xs bg-gray-100 px-2 py-1 rounded flex items-center">
-                            <span className="font-medium text-gray-700">{detail.concepto}</span>
-                            <span className="ml-1 text-gray-500">- {detail.peso}kg</span>
+                          <div
+                            key={detail.id_detalle_insumo}
+                            className="text-xs bg-gray-100 px-2 py-1 rounded flex items-center"
+                          >
+                            <span className="font-medium text-gray-700">
+                              {detail.concepto}
+                            </span>
+                            <span className="ml-1 text-gray-500">
+                              - {detail.peso}kg
+                            </span>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <span className="text-gray-400 text-xs italic">Sin detalles</span>
+                      <span className="text-gray-400 text-xs italic">
+                        Sin detalles
+                      </span>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -84,7 +108,6 @@ const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }) => {
                       >
                         <PencilLine size={16} />
                       </button>
-
 
                       <button
                         onClick={() => onDelete(supply.id_insumo)}
@@ -103,8 +126,12 @@ const SupplyTable = ({ supplies, loading, error, onEdit, onDelete }) => {
       ) : (
         <div className="text-center py-16 px-4">
           <Package className="mx-auto text-gray-300 mb-3" size={48} />
-          <h3 className="text-gray-500 font-medium text-lg mb-2">No se encontraron insumos</h3>
-          <p className="text-gray-400 text-sm max-w-md mx-auto mb-4">Agrega nuevos insumos para comenzar a gestionar tu inventario</p>
+          <h3 className="text-gray-500 font-medium text-lg mb-2">
+            No se encontraron insumos
+          </h3>
+          <p className="text-gray-400 text-sm max-w-md mx-auto mb-4">
+            Agrega nuevos insumos para comenzar a gestionar tu inventario
+          </p>
           <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md flex items-center gap-2 mx-auto transition-colors">
             <Plus size={16} />
             Agregar Insumo

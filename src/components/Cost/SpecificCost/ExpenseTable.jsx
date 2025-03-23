@@ -1,5 +1,12 @@
 import React from "react";
-import { Trash2, PencilLine, Loader2, AlertCircle, DollarSign, Receipt } from "lucide-react";
+import {
+  Trash2,
+  PencilLine,
+  Loader2,
+  AlertCircle,
+  DollarSign,
+  Receipt,
+} from "lucide-react";
 
 const ExpenseTable = ({ expenses, loading, error, onEdit, onDelete }) => {
   if (loading) {
@@ -22,8 +29,6 @@ const ExpenseTable = ({ expenses, loading, error, onEdit, onDelete }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
-
-
       {expenses.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -48,16 +53,24 @@ const ExpenseTable = ({ expenses, loading, error, onEdit, onDelete }) => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {expenses.map((expense) => (
-                <tr key={expense.id_gasto_esp} className="hover:bg-red-50 transition-colors">
+                <tr
+                  key={expense.id_gasto_esp}
+                  className="hover:bg-red-50 transition-colors"
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-medium text-gray-900">{expense.nom_gasto}</div>
+                    <div className="font-medium text-gray-900">
+                      {expense.nom_gasto}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm bg-red-100 text-red-800 px-2 py-1 rounded-full inline-flex items-center">
                       <DollarSign size={14} className="mr-1" />
-                      {expense.valor_gasto_especifico?.toFixed(2)}
+                      {new Intl.NumberFormat("es-ES").format(
+                        expense.valor_gasto_especifico
+                      )}
                     </div>
                   </td>
+
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end gap-2">
                       <button
@@ -84,8 +97,12 @@ const ExpenseTable = ({ expenses, loading, error, onEdit, onDelete }) => {
       ) : (
         <div className="text-center py-16 px-4">
           <Receipt className="mx-auto text-gray-300 mb-3" size={48} />
-          <h3 className="text-gray-500 font-medium text-lg mb-2">No se encontraron gastos</h3>
-          <p className="text-gray-400 text-sm max-w-md mx-auto">Cuando registres gastos específicos, aparecerán listados aquí.</p>
+          <h3 className="text-gray-500 font-medium text-lg mb-2">
+            No se encontraron gastos
+          </h3>
+          <p className="text-gray-400 text-sm max-w-md mx-auto">
+            Cuando registres gastos específicos, aparecerán listados aquí.
+          </p>
         </div>
       )}
     </div>

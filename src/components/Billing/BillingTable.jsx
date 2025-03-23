@@ -52,15 +52,19 @@ const BillingTable = () => {
   const filteredFacturas = facturas.filter((factura) => {
     return (
       Object.values(factura).some((value) =>
-        String(value || "").toLowerCase().includes(searchTerm.trim().toLowerCase())
+        String(value || "")
+          .toLowerCase()
+          .includes(searchTerm.trim().toLowerCase())
       ) ||
       (factura.cliente &&
-        (factura.cliente.nombre_cliente?.toLowerCase().includes(searchTerm.trim().toLowerCase()) ||
-          factura.cliente.tel_cliente?.toLowerCase().includes(searchTerm.trim().toLowerCase())))
+        (factura.cliente.nombre_cliente
+          ?.toLowerCase()
+          .includes(searchTerm.trim().toLowerCase()) ||
+          factura.cliente.tel_cliente
+            ?.toLowerCase()
+            .includes(searchTerm.trim().toLowerCase())))
     );
   });
-
-
 
   if (loading)
     return (
@@ -102,6 +106,9 @@ const BillingTable = () => {
                 Código
               </th>
               <th className="p-3 text-left text-purple-700 font-semibold">
+                Sucursal
+              </th>
+              <th className="p-3 text-left text-purple-700 font-semibold">
                 Fecha Creación
               </th>
               <th className="p-3 text-left text-purple-700 font-semibold">
@@ -131,6 +138,12 @@ const BillingTable = () => {
                 className="border-b hover:bg-purple-50 transition-colors"
               >
                 <td className="p-3">{factura.cod_factura}</td>
+                <td className="p-3">
+                  {factura.cliente.sucursal_cliente.length > 0
+                    ? factura.cliente.sucursal_cliente[0].sucursal.nom_sucursal
+                    : "Sin sucursal"}
+                </td>
+
                 <td className="p-3">{factura.fecha_creacion_fact}</td>
                 <td className="p-3">{factura.fecha_final_fact}</td>
                 <td className="p-3 font-medium">
@@ -142,18 +155,19 @@ const BillingTable = () => {
                 <td className="p-3">{factura.cliente?.tel_cliente || "N/A"}</td>
                 <td className="p-3">
                   <span
-                    className={`px-3 py-1 rounded-full text-sm font-semibold ${factura.estado?.toLowerCase() === "pendiente"
-                      ? "bg-yellow-500 text-white"
-                      : factura.estado?.toLowerCase() === "entregado"
+                    className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                      factura.estado?.toLowerCase() === "pendiente"
+                        ? "bg-yellow-500 text-white"
+                        : factura.estado?.toLowerCase() === "entregado"
                         ? "bg-green-500 text-white"
                         : "bg-gray-400 text-white"
-                      }`}
+                    }`}
                   >
                     {factura.estado?.toLowerCase() === "pendiente"
                       ? "Pendiente"
                       : factura.estado?.toLowerCase() === "entregado"
-                        ? "Entregado"
-                        : "Desconocido"}
+                      ? "Entregado"
+                      : "Desconocido"}
                   </span>
                 </td>
 

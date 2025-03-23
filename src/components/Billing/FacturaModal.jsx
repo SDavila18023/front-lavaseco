@@ -16,9 +16,9 @@ import {
 } from "lucide-react";
 
 const sucursales = [
-  { nombre: "Sucursal Centro", direccion: "Av. Principal 123" },
-  { nombre: "Sucursal Norte", direccion: "Calle 45 #12-34" },
-  { nombre: "Sucursal Sur", direccion: "Carrera 8 #20-55" },
+  { nombre: "Sucursal Cedritos", direccion: "Carrera 11#146-08" },
+  { nombre: "Sucursal Almacen", direccion: "Calle 45 #12-34" },
+  { nombre: "Sucursal Domicilio", direccion: "Domicilio" },
 ];
 
 const FacturaModal = ({ isOpen, onClose, onSubmit }) => {
@@ -95,9 +95,9 @@ const FacturaModal = ({ isOpen, onClose, onSubmit }) => {
       },
       sucursal: sucursalSeleccionada
         ? {
-          nom_sucursal: sucursalSeleccionada.nombre,
-          direccion_suc: sucursalSeleccionada.direccion,
-        }
+            nom_sucursal: sucursalSeleccionada.nombre,
+            direccion_suc: sucursalSeleccionada.direccion,
+          }
         : {},
       factura_detalle: factura.detalles,
     };
@@ -159,9 +159,10 @@ const FacturaModal = ({ isOpen, onClose, onSubmit }) => {
               </label>
               <input
                 type="date"
+                name="fecha_creacion"
                 value={factura.fecha_creacion}
-                readOnly
-                className="w-full p-2 border border-gray-200 rounded bg-gray-100 text-gray-600"
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-200 rounded bg-white text-gray-700"
               />
             </div>
           </div>
