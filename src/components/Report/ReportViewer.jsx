@@ -46,8 +46,9 @@ const ReportViewer = () => {
         `http://localhost:5000/api/reports/${reportType}`
       );
       const result = await response.json();
-      setData(result);
       console.log(result);
+      setData(result);
+      
 
       showNotification("Datos actualizados correctamente");
     } catch (error) {
@@ -123,82 +124,90 @@ const ReportViewer = () => {
   };
 
   const filteredData = data
-    .filter((item) => {
-      const searchLower = searchTerm.toLowerCase();
-      const matchesSearch = Object.entries(item).some(([key, value]) => {
-        if (typeof value === "object" && value !== null) {
-          return Object.values(value).some((nestedValue) =>
-            nestedValue?.toString().toLowerCase().includes(searchLower)
-          );
-        }
-        return value?.toString().toLowerCase().includes(searchLower);
-      });
+  .filter((item) => {
+    const searchLower = searchTerm.toLowerCase();
 
-      if (!matchesSearch) return false;
-
-      const dateField =
-        reportType === "gastos" ? "fecha_compra" : "fecha_creacion_fact";
-      const itemDate = new Date(item[dateField]);
-
-      if (filters.dateFrom && new Date(filters.dateFrom) > itemDate)
-        return false;
-      if (filters.dateTo && new Date(filters.dateTo) < itemDate) return false;
-
-      const amountField =
-        reportType === "gastos" ? "total_gastos" : "valor_fact";
-      const amount = parseFloat(item[amountField]);
-
-      if (filters.minAmount && parseFloat(filters.minAmount) > amount)
-        return false;
-      if (filters.maxAmount && parseFloat(filters.maxAmount) < amount)
-        return false;
-
-      if (
-        reportType === "factura" &&
-        filters.status !== "todos" &&
-        item.estado !== filters.status
-      ) {
-        return false;
+    // Verifica si el término de búsqueda coincide con algún valor del objeto
+    const matchesSearch = Object.entries(item).some(([key, value]) => {
+      if (typeof value === "object" && value !== null) {
+        return Object.values(value).some((nestedValue) =>
+          nestedValue?.toString().toLowerCase().includes(searchLower)
+        );
       }
-
-      return true;
-    })
-    .sort((a, b) => {
-      if (!sortConfig.key) return 0;
-
-      let aValue = a[sortConfig.key];
-      let bValue = b[sortConfig.key];
-
-      if (sortConfig.key.includes(".")) {
-        const [parent, child] = sortConfig.key.split(".");
-        aValue = a[parent]?.[child] || "";
-        bValue = b[parent]?.[child] || "";
-      }
-
-      const numericFields = ["total_gastos", "valor_fact"];
-      if (numericFields.includes(sortConfig.key)) {
-        aValue = parseFloat(aValue) || 0;
-        bValue = parseFloat(bValue) || 0;
-      }
-
-      const dateFields = [
-        "fecha_compra",
-        "fecha_creacion_fact",
-        "fecha_final_fact",
-      ];
-      if (dateFields.includes(sortConfig.key)) {
-        aValue = aValue ? new Date(aValue).getTime() : 0;
-        bValue = bValue ? new Date(bValue).getTime() : 0;
-      }
-
-      if (aValue < bValue) {
-        return sortConfig.direction === "asc" ? -1 : 1;
-      }
-      if (aValue > bValue) {
-        return sortConfig.direction === "asc" ? 1 : -1;
-      }
-      return 0;
+      return value?.toString().toLowerCase().includes(searchLower);
     });
+
+    // Búsqueda específica por sucursal
+    const matchesSucursal =
+      item.cliente?.sucursal_cliente?.[0]?.sucursal?.nom_sucursal
+        ?.toLowerCase()
+        .includes(searchLower);
+
+    if (!matchesSearch && !matchesSucursal) return false;
+
+    // Filtrado por fecha
+    const dateField =
+      reportType === "gastos" ? "fecha_compra" : "fecha_creacion_fact";
+    const itemDate = new Date(item[dateField]);
+
+    if (filters.dateFrom && new Date(filters.dateFrom) > itemDate) return false;
+    if (filters.dateTo && new Date(filters.dateTo) < itemDate) return false;
+
+    // Filtrado por monto
+    const amountField = reportType === "gastos" ? "total_gastos" : "valor_fact";
+    const amount = parseFloat(item[amountField]);
+
+    if (filters.minAmount && parseFloat(filters.minAmount) > amount) return false;
+    if (filters.maxAmount && parseFloat(filters.maxAmount) < amount) return false;
+
+    // Filtrado por estado en facturas
+    if (
+      reportType === "factura" &&
+      filters.status !== "todos" &&
+      item.estado !== filters.status
+    ) {
+      return false;
+    }
+
+    return true;
+  })
+  .sort((a, b) => {
+    if (!sortConfig.key) return 0;
+
+    let aValue = a[sortConfig.key];
+    let bValue = b[sortConfig.key];
+
+    if (sortConfig.key.includes(".")) {
+      const [parent, child] = sortConfig.key.split(".");
+      aValue = a[parent]?.[child] || "";
+      bValue = b[parent]?.[child] || "";
+    }
+
+    const numericFields = ["total_gastos", "valor_fact"];
+    if (numericFields.includes(sortConfig.key)) {
+      aValue = parseFloat(aValue) || 0;
+      bValue = parseFloat(bValue) || 0;
+    }
+
+    const dateFields = [
+      "fecha_compra",
+      "fecha_creacion_fact",
+      "fecha_final_fact",
+    ];
+    if (dateFields.includes(sortConfig.key)) {
+      aValue = aValue ? new Date(aValue).getTime() : 0;
+      bValue = bValue ? new Date(bValue).getTime() : 0;
+    }
+
+    if (aValue < bValue) {
+      return sortConfig.direction === "asc" ? -1 : 1;
+    }
+    if (aValue > bValue) {
+      return sortConfig.direction === "asc" ? 1 : -1;
+    }
+    return 0;
+  });
+
 
   const formatDate = (dateString) => {
     if (!dateString) return "No disponible";
@@ -412,9 +421,8 @@ const ReportViewer = () => {
                         className="w-full pl-4 pr-10 py-2 rounded-lg border border-purple-200 bg-white text-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-300 transition-all appearance-none"
                       >
                         <option value="todos">Todos los estados</option>
-                        <option value="pendiente">Pendiente</option>
-                        <option value="pagado">Pagado</option>
-                        <option value="anulado">Anulado</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Entregado">Entregado</option>
                       </select>
                       <ChevronDown
                         className="absolute right-3 top-2.5 pointer-events-none text-purple-500"
@@ -571,214 +579,203 @@ const ReportViewer = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden border border-purple-100">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-purple-50 border-b border-purple-100">
-                {reportType === "gastos" && (
-                  <>
-                    <th className="p-4 text-left text-purple-800 font-semibold">
-                      <button
-                        className="flex items-center gap-1"
-                        onClick={() => handleSort("concepto_gasto")}
-                      >
-                        Concepto {getSortIcon("concepto_gasto")}
-                      </button>
-                    </th>
-                    <th className="p-4 text-left text-purple-800 font-semibold">
-                      <button
-                        className="flex items-center gap-1"
-                        onClick={() => handleSort("fecha_compra")}
-                      >
-                        Fecha Compra {getSortIcon("fecha_compra")}
-                      </button>
-                    </th>
-                    <th className="p-4 text-left text-purple-800 font-semibold">
-                      <button
-                        className="flex items-center gap-1"
-                        onClick={() => handleSort("total_gastos")}
-                      >
-                        Total {getSortIcon("total_gastos")}
-                      </button>
-                    </th>
-                  </>
-                )}
-                {reportType === "factura" && (
-                  <>
-                    <th className="p-4 text-left text-purple-800 font-semibold">
-                      <button
-                        className="flex items-center gap-1"
-                        onClick={() => handleSort("cod_factura")}
-                      >
-                        Código {getSortIcon("cod_factura")}
-                      </button>
-                    </th>
-                    <th className="p-4 text-left text-purple-800 font-semibold">
-                      <button
-                        className="flex items-center gap-1"
-                        onClick={() =>
-                          handleSort(
-                            "cliente.sucursal_cliente.0.sucursal.nom_sucursal"
-                          )
-                        }
-                      >
-                        Sucursal{" "}
-                        {getSortIcon(
-                          "cliente.sucursal_cliente.0.sucursal.nom_sucursal"
-                        )}
-                      </button>
-                    </th>
-
-                    <th className="p-4 text-left text-purple-800 font-semibold">
-                      <button
-                        className="flex items-center gap-1"
-                        onClick={() => handleSort("estado")}
-                      >
-                        Estado {getSortIcon("estado")}
-                      </button>
-                    </th>
-                    <th className="p-4 text-left text-purple-800 font-semibold">
-                      <button
-                        className="flex items-center gap-1"
-                        onClick={() => handleSort("fecha_creacion_fact")}
-                      >
-                        Fecha Creación {getSortIcon("fecha_creacion_fact")}
-                      </button>
-                    </th>
-                    <th className="p-4 text-left text-purple-800 font-semibold">
-                      <button
-                        className="flex items-center gap-1"
-                        onClick={() => handleSort("fecha_final_fact")}
-                      >
-                        Fecha Entrega {getSortIcon("fecha_final_fact")}
-                      </button>
-                    </th>
-                    <th className="p-4 text-left text-purple-800 font-semibold">
-                      <button
-                        className="flex items-center gap-1"
-                        onClick={() => handleSort("valor_fact")}
-                      >
-                        Valor {getSortIcon("valor_fact")}
-                      </button>
-                    </th>
-                    <th className="p-4 text-left text-purple-800 font-semibold">
-                      <button
-                        className="flex items-center gap-1"
-                        onClick={() => handleSort("cliente.nombre_cliente")}
-                      >
-                        Cliente {getSortIcon("cliente.nombre_cliente")}
-                      </button>
-                    </th>
-                    <th className="p-4 text-left text-purple-800 font-semibold">
-                      Teléfono
-                    </th>
-                  </>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td
-                    colSpan={reportType === "gastos" ? 3 : 7}
-                    className="text-center p-8"
-                  >
-                    <div className="flex justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-                    </div>
+<div className="bg-white rounded-xl shadow-md overflow-hidden border border-purple-100">
+  <div className="overflow-x-auto">
+    <table className="w-full">
+      <thead>
+        <tr className="bg-purple-50 border-b border-purple-100">
+          {reportType === "gastos" && (
+            <>
+              <th className="p-4 text-left text-purple-800 font-semibold">
+                <button
+                  className="flex items-center gap-1"
+                  onClick={() => handleSort("concepto_gasto")}
+                >
+                  Concepto {getSortIcon("concepto_gasto")}
+                </button>
+              </th>
+              <th className="p-4 text-left text-purple-800 font-semibold">
+                <button
+                  className="flex items-center gap-1"
+                  onClick={() => handleSort("fecha_compra")}
+                >
+                  Fecha Compra {getSortIcon("fecha_compra")}
+                </button>
+              </th>
+              <th className="p-4 text-left text-purple-800 font-semibold">
+                <button
+                  className="flex items-center gap-1"
+                  onClick={() => handleSort("total_gastos")}
+                >
+                  Total {getSortIcon("total_gastos")}
+                </button>
+              </th>
+            </>
+          )}
+          {reportType === "factura" && (
+            <>
+              <th className="p-4 text-left text-purple-800 font-semibold">
+                <button
+                  className="flex items-center gap-1"
+                  onClick={() => handleSort("cod_factura")}
+                >
+                  Código {getSortIcon("cod_factura")}
+                </button>
+              </th>
+              <th className="p-4 text-left text-purple-800 font-semibold">
+                <button
+                  className="flex items-center gap-1"
+                  onClick={() =>
+                    handleSort(
+                      "cliente.sucursal_cliente.0.sucursal.nom_sucursal"
+                    )
+                  }
+                >
+                  Sucursal{" "}
+                  {getSortIcon(
+                    "cliente.sucursal_cliente.0.sucursal.nom_sucursal"
+                  )}
+                </button>
+              </th>
+              <th className="p-4 text-left text-purple-800 font-semibold">
+                <button
+                  className="flex items-center gap-1"
+                  onClick={() => handleSort("estado")}
+                >
+                  Estado {getSortIcon("estado")}
+                </button>
+              </th>
+              <th className="p-4 text-left text-purple-800 font-semibold">
+                <button
+                  className="flex items-center gap-1"
+                  onClick={() => handleSort("fecha_creacion_fact")}
+                >
+                  Fecha Creación {getSortIcon("fecha_creacion_fact")}
+                </button>
+              </th>
+              <th className="p-4 text-left text-purple-800 font-semibold">
+                <button
+                  className="flex items-center gap-1"
+                  onClick={() => handleSort("fecha_final_fact")}
+                >
+                  Fecha Entrega {getSortIcon("fecha_final_fact")}
+                </button>
+              </th>
+              <th className="p-4 text-left text-purple-800 font-semibold">
+                <button
+                  className="flex items-center gap-1"
+                  onClick={() => handleSort("valor_fact")}
+                >
+                  Valor {getSortIcon("valor_fact")}
+                </button>
+              </th>
+              <th className="p-4 text-left text-purple-800 font-semibold">
+                <button
+                  className="flex items-center gap-1"
+                  onClick={() => handleSort("cliente.nombre_cliente")}
+                >
+                  Cliente {getSortIcon("cliente.nombre_cliente")}
+                </button>
+              </th>
+              <th className="p-4 text-left text-purple-800 font-semibold">
+                Teléfono
+              </th>
+            </>
+          )}
+        </tr>
+      </thead>
+      <tbody>
+        {loading ? (
+          <tr>
+            <td
+              colSpan={reportType === "gastos" ? 3 : 7}
+              className="text-center p-8"
+            >
+              <div className="flex justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+              </div>
+            </td>
+          </tr>
+        ) : !filteredData || filteredData.length === 0 ? (
+          <tr>
+            <td
+              colSpan={reportType === "gastos" ? 3 : 7}
+              className="text-center p-8 text-gray-500"
+            >
+              No se encontraron resultados
+            </td>
+          </tr>
+        ) : (
+          filteredData.map((item, index) => (
+            <tr
+              key={item?.id || index}
+              className="border-t border-purple-100 hover:bg-purple-50 transition-colors"
+            >
+              {reportType === "gastos" && (
+                <>
+                  <td className="p-4 font-medium">
+                    {item?.concepto_gasto || "Sin concepto"}
                   </td>
-                </tr>
-              ) : filteredData.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={reportType === "gastos" ? 3 : 7}
-                    className="text-center p-8 text-gray-500"
-                  >
-                    No se encontraron resultados
+                  <td className="p-4 text-gray-600">
+                    {item?.fecha_compra ? formatDate(item.fecha_compra) : "No disponible"}
                   </td>
-                </tr>
-              ) : (
-                filteredData.map((item, index) => (
-                  <tr
-                    key={item.id || index}
-                    className="border-t border-purple-100 hover:bg-purple-50 transition-colors"
-                  >
-                    {reportType === "gastos" && (
-                      <>
-                        <td className="p-4 font-medium">
-                          {item.concepto_gasto}
-                        </td>
-                        <td className="p-4 text-gray-600">
-                          {formatDate(item.fecha_compra)}
-                        </td>
-                        <td className="p-4 font-medium">
-                          $
-                          {parseFloat(item.total_gastos).toLocaleString(
-                            undefined,
-                            {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            }
-                          )}
-                        </td>
-                      </>
-                    )}
-                    {reportType === "factura" && (
-                      <>
-                        <td className="p-4 font-medium">{item.cod_factura}</td>
-                        <td className="p-4 font-medium">
-                          {
-                            item.cliente.sucursal_cliente[0].sucursal
-                              .nom_sucursal
-                          }
-                        </td>
-                        <td className="p-4">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              item.estado === "Entregado"
-                                ? "bg-green-100 text-green-800"
-                                : item.estado === "anulado"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-yellow-100 text-yellow-800"
-                            }`}
-                          >
-                            {item.estado}
-                          </span>
-                        </td>
-                        <td className="p-4 text-gray-600">
-                          {formatDate(item.fecha_creacion_fact)}
-                        </td>
-                        <td className="p-4 text-gray-600">
-                          {item.fecha_final_fact
-                            ? formatDate(item.fecha_final_fact)
-                            : "No entregado"}
-                        </td>
-                        <td className="p-4 font-medium">
-                          $
-                          {parseFloat(item.valor_fact).toLocaleString(
-                            undefined,
-                            {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            }
-                          )}
-                        </td>
-                        <td className="p-4">
-                          {item.cliente?.nombre_cliente || "Sin nombre"}
-                        </td>
-                        <td className="p-4 text-gray-600">
-                          {item.cliente?.tel_cliente || "Sin teléfono"}
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                ))
+                  <td className="p-4 font-medium">
+                    $
+                    {Number(item?.total_gastos || 0).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </td>
+                </>
               )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              {reportType === "factura" && (
+                <>
+                  <td className="p-4 font-medium">{item?.cod_factura || "Sin código"}</td>
+                  <td className="p-4 font-medium">
+                    {
+                      item?.cliente?.sucursal_cliente?.[0]?.sucursal?.nom_sucursal ||
+                      "Sin sucursal"
+                    }
+                  </td>
+                  <td className="p-4">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        item?.estado === "Entregado"
+                          ? "bg-green-100 text-green-800"
+                          : item?.estado === "anulado"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {item?.estado || "Sin estado"}
+                    </span>
+                  </td>
+                  <td className="p-4 text-gray-600">
+                    {item?.fecha_creacion_fact ? formatDate(item.fecha_creacion_fact) : "No disponible"}
+                  </td>
+                  <td className="p-4 text-gray-600">
+                    {item?.fecha_final_fact ? formatDate(item.fecha_final_fact) : "No entregado"}
+                  </td>
+                  <td className="p-4 font-medium">
+                    $
+                    {Number(item?.valor_fact || 0).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </td>
+                  <td className="p-4">{item?.cliente?.nombre_cliente || "Sin nombre"}</td>
+                  <td className="p-4 text-gray-600">
+                    {item?.cliente?.tel_cliente || "Sin teléfono"}
+                  </td>
+                </>
+              )}
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
     </div>
   );
 };
