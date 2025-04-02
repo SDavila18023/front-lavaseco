@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import BillDetail from "./BillDetail";
-import { Search, Trash2, Eye, RefreshCw } from "lucide-react";
+import { Search, Trash2, Eye, RefreshCw, Edit } from "lucide-react";
+import EditBillModal from "./EditBillModal"; // Vamos a crear este componente
 
 const BillingTable = () => {
   const [facturas, setFacturas] = useState([]);
@@ -9,6 +10,8 @@ const BillingTable = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedFactura, setSelectedFactura] = useState(null);
+  const [editingFactura, setEditingFactura] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     fetchFacturas();
@@ -46,6 +49,26 @@ const BillingTable = () => {
       fetchFacturas();
     } catch (err) {
       alert("Error al cambiar el estado de la factura.");
+    }
+  };
+
+  const handleEditFactura = (factura) => {
+    setEditingFactura(factura);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateFactura = async (updatedFactura) => {
+    try {
+      await axios.put(
+        `http://localhost:5000/api/bill/${updatedFactura.id_factura}`,
+        updatedFactura
+      );
+      fetchFacturas();
+      setIsEditModalOpen(false);
+      setEditingFactura(null);
+    } catch (err) {
+      alert("Error al actualizar la factura.");
+      console.error(err);
     }
   };
 
@@ -143,8 +166,6 @@ const BillingTable = () => {
                     ? factura.cliente.sucursal_cliente[0].sucursal.nom_sucursal
                     : "Sin sucursal"}
                 </td>
-
-
                 <td className="p-3">{factura.fecha_creacion_fact}</td>
                 <td className="p-3">{factura.fecha_final_fact}</td>
                 <td className="p-3 font-medium">
@@ -156,18 +177,19 @@ const BillingTable = () => {
                 <td className="p-3">{factura.cliente?.tel_cliente || "N/A"}</td>
                 <td className="p-3">
                   <span
-                    className={`px-3 py-1 rounded-full text-sm font-semibold ${factura.estado?.toLowerCase() === "pendiente"
+                    className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                      factura.estado?.toLowerCase() === "pendiente"
                         ? "bg-yellow-500 text-white"
                         : factura.estado?.toLowerCase() === "entregado"
-                          ? "bg-green-500 text-white"
-                          : "bg-gray-400 text-white"
-                      }`}
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-400 text-white"
+                    }`}
                   >
                     {factura.estado?.toLowerCase() === "pendiente"
                       ? "Pendiente"
                       : factura.estado?.toLowerCase() === "entregado"
-                        ? "Entregado"
-                        : "Desconocido"}
+                      ? "Entregado"
+                      : "Desconocido"}
                   </span>
                 </td>
 
@@ -181,8 +203,15 @@ const BillingTable = () => {
                       <Eye className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => handleChangeStatus(factura.id_factura)}
+                      onClick={() => handleEditFactura(factura)}
                       className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                      title="Editar factura"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleChangeStatus(factura.id_factura)}
+                      className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors"
                       title="Cambiar estado"
                     >
                       <RefreshCw className="h-4 w-4" />
@@ -212,6 +241,17 @@ const BillingTable = () => {
         <BillDetail
           factura={selectedFactura}
           onClose={() => setSelectedFactura(null)}
+        />
+      )}
+
+      {isEditModalOpen && (
+        <EditBillModal
+          factura={editingFactura}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingFactura(null);
+          }}
+          onUpdate={handleUpdateFactura}
         />
       )}
     </div>
