@@ -5,7 +5,7 @@ import {
   deleteExpense,
   createExpense,
   updateExpense,
-} from "../../../services/expenseService";
+} from "../../../services/ExpenseService";
 import SearchBar from "./SearchBar";
 import ExpenseTable from "./ExpenseTable";
 import ExpenseModal from "./ExpenseModal";
