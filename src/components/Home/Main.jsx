@@ -6,6 +6,7 @@ import { DollarSign, TrendingDown, FileText, LogOut, PieChart, Calendar, Filter 
 import Header from "../Header/Header";
 
 const Main = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [financialData, setFinancialData] = useState({
     rawIncome: [],
@@ -29,7 +30,7 @@ const Main = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/dashboard-data");
+      const response = await axios.get(`${API_URL}/api/dashboard-data`);
       const { ingresos, gastos } = response.data;
 
       const validIncome = ingresos.filter(item => item.fecha !== "Desconocido");

@@ -20,6 +20,7 @@ const MainCost = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     fetchExpenses();
@@ -29,7 +30,7 @@ const MainCost = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get("http://localhost:5000/api/cost/");
+      const response = await axios.get(`${API_URL}/api/cost/`);
 
       const expensesData = response.data;
       if (!expensesData || expensesData.length === 0) {

@@ -56,6 +56,7 @@ const UserList = () => {
       
       setUsers([...users, response.data]);
       setIsModalOpen(false);
+      fetchUsers();
     } catch (err) {
       console.error('Error adding user:', err);
       alert('No fue posible agregar el usuario. Por favor, intente nuevamente.');

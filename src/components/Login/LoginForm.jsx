@@ -8,9 +8,11 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
+    console.log(API_URL)
     e.preventDefault();
     setError(null);
 
@@ -21,7 +23,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/user/login",
+        `${API_URL}/api/user/login`,
         {
           email,
           password,

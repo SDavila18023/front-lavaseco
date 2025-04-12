@@ -14,6 +14,8 @@ const EditBillModal = ({ factura, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     let updatedFormData = {
@@ -35,7 +37,7 @@ const EditBillModal = ({ factura, onClose }) => {
     setError("");
 
     try {
-      await axios.put(`http://localhost:5000/api/bill/${formData.id_factura}`, formData);
+      await axios.put(`${API_URL}/api/bill/${formData.id_factura}`, formData);
       window.location.reload();  // Recargar la página después de la actualización
     } catch (err) {
       setError("Error al actualizar la factura. Inténtalo de nuevo.");

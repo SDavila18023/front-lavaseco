@@ -15,18 +15,28 @@ const AddUserModal = ({ isOpen, onClose, onAddUser }) => {
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!newUser.email.trim())
+  
+    if (!newUser.email.trim()) {
       newErrors.email = "El correo electrónico es requerido";
-    else if (!/\S+@\S+\.\S+/.test(newUser.email))
-      newErrors.email = "Ingrese un correo electrónico válido";
-    if (!newUser.password) newErrors.password = "La contraseña es requerida";
-    else if (newUser.password.length < 6)
+    } else if (
+      !/^[\w.-]+@(gmail\.com|hotmail\.com|outlook\.com|yahoo\.com)$/i.test(
+        newUser.email.trim()
+      )
+    ) {
+      newErrors.email =
+        "Solo se permiten correos de Gmail, Hotmail, Outlook o Yahoo";
+    }
+  
+    if (!newUser.password) {
+      newErrors.password = "La contraseña es requerida";
+    } else if (newUser.password.length < 6) {
       newErrors.password = "La contraseña debe tener al menos 6 caracteres";
-
+    }
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();

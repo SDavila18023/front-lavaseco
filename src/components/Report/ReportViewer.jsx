@@ -23,6 +23,7 @@ const ReportViewer = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [notification, setNotification] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const API_URL = import.meta.env.VITE_API_URL;
   const [filters, setFilters] = useState({
     dateFrom: "",
     dateTo: "",
@@ -43,7 +44,7 @@ const ReportViewer = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/reports/${reportType}`
+        `${API_URL}/api/reports/${reportType}`
       );
       const result = await response.json();
       console.log(result);
@@ -66,7 +67,7 @@ const ReportViewer = () => {
     try {
       showNotification("Generando PDF...");
       const response = await fetch(
-        `http://localhost:5000/api/reports/${reportType}/pdf`,
+        `${API_URL}/api/reports/${reportType}/pdf`,
         {
           method: "POST",
           headers: {

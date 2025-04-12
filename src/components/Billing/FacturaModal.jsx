@@ -72,6 +72,8 @@ const FacturaModal = ({ isOpen, onClose, onSubmit }) => {
     }));
   };
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const total = factura.detalles.reduce(
       (sum, d) => sum + d.cantidad_prendas * d.valor_uni_prenda,
@@ -103,7 +105,7 @@ const FacturaModal = ({ isOpen, onClose, onSubmit }) => {
     };
 
     try {
-      await axios.post("http://localhost:5000/api/bill/", facturaFormateada);
+      await axios.post(`${API_URL}/api/bill/`, facturaFormateada);
       onSubmit(facturaFormateada);
       onClose();
     } catch (error) {
@@ -139,7 +141,8 @@ const FacturaModal = ({ isOpen, onClose, onSubmit }) => {
                 Código de Factura
               </label>
               <input
-                type="text"
+                type="number"
+                min="0"
                 name="cod_factura"
                 value={factura.cod_factura}
                 onChange={handleChange}

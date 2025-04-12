@@ -13,13 +13,15 @@ const BillingTable = () => {
   const [editingFactura, setEditingFactura] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     fetchFacturas();
   }, []);
 
   const fetchFacturas = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/bill/");
+      const response = await axios.get(`${API_URL}/api/bill/`);
       setFacturas(response.data);
       console.log(response.data);
 
@@ -34,7 +36,7 @@ const BillingTable = () => {
     if (!window.confirm("¿Seguro que deseas eliminar esta factura?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/bill/${idFactura}`);
+      await axios.delete(`${API_URL}/api/bill/${idFactura}`);
       setFacturas(
         facturas.filter((factura) => factura.id_factura !== idFactura)
       );
@@ -44,8 +46,9 @@ const BillingTable = () => {
   };
 
   const handleChangeStatus = async (idFactura) => {
+    if (!window.confirm("¿Seguro que deseas cambiar el estado de esta factura?")) return;
     try {
-      await axios.put(`http://localhost:5000/api/bill/${idFactura}/status`);
+      await axios.put(`${API_URL}/api/bill/${idFactura}/status`);
       fetchFacturas();
     } catch (err) {
       alert("Error al cambiar el estado de la factura.");
@@ -60,7 +63,7 @@ const BillingTable = () => {
   const handleUpdateFactura = async (updatedFactura) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/bill/${updatedFactura.id_factura}`,
+        `${API_URL}/api/bill/${updatedFactura.id_factura}`,
         updatedFactura
       );
       fetchFacturas();
@@ -73,21 +76,18 @@ const BillingTable = () => {
   };
 
   const filteredFacturas = facturas.filter((factura) => {
-    return (
-      Object.values(factura).some((value) =>
-        String(value || "")
-          .toLowerCase()
-          .includes(searchTerm.trim().toLowerCase())
-      ) ||
-      (factura.cliente &&
-        (factura.cliente.nombre_cliente
-          ?.toLowerCase()
-          .includes(searchTerm.trim().toLowerCase()) ||
-          factura.cliente.tel_cliente
-            ?.toLowerCase()
-            .includes(searchTerm.trim().toLowerCase())))
-    );
+    const search = searchTerm.trim().toLowerCase();
+
+    const valuesToSearch = [
+      ...Object.values(factura).map((val) => String(val || "").toLowerCase()),
+      factura.cliente?.nombre_cliente?.toLowerCase() || "",
+      factura.cliente?.tel_cliente?.toLowerCase() || "",
+      factura.cliente?.sucursal_cliente?.[0]?.sucursal?.nom_sucursal?.toLowerCase() || ""
+    ];
+
+    return valuesToSearch.some((value) => value.includes(search));
   });
+
 
   if (loading)
     return (
@@ -177,19 +177,18 @@ const BillingTable = () => {
                 <td className="p-3">{factura.cliente?.tel_cliente || "N/A"}</td>
                 <td className="p-3">
                   <span
-                    className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                      factura.estado?.toLowerCase() === "pendiente"
+                    className={`px-3 py-1 rounded-full text-sm font-semibold ${factura.estado?.toLowerCase() === "pendiente"
                         ? "bg-yellow-500 text-white"
                         : factura.estado?.toLowerCase() === "entregado"
-                        ? "bg-green-500 text-white"
-                        : "bg-gray-400 text-white"
-                    }`}
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-400 text-white"
+                      }`}
                   >
                     {factura.estado?.toLowerCase() === "pendiente"
                       ? "Pendiente"
                       : factura.estado?.toLowerCase() === "entregado"
-                      ? "Entregado"
-                      : "Desconocido"}
+                        ? "Entregado"
+                        : "Desconocido"}
                   </span>
                 </td>
 
